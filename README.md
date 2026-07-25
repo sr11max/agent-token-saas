@@ -8,7 +8,7 @@ A solo project. 1 developer. $0 to start. MVP done.
 
 - 一个 **token-metered AI API**（按调用量收费）
 - 后端：**FastAPI**
-- 前端：**Next.js 14**
+- 前端：**单页 HTML**（未来切 Next.js）
 - AI 调度：**OpenRouter**（1 key = 100+ 模型）
 - 数据库：开发用 **SQLite**，生产用 **Postgres**
 - 认证：**JWT**（后续 Clerk）
@@ -102,17 +102,18 @@ API 文档：http://127.0.0.1:8000/docs
 
 - [x] MVP（注册 / 登录 / 调 AI / 扣费）
 - [x] 跑通 DeepSeek + OpenRouter
-- [ ] 前端（Next.js）
-- [ ] Landing page
-- [ ] 营销（Reddit / X / Medium）
-- [ ] ProductHunt + HN 发布
+- [x] 单页 HTML 前端
+- [x] 部署到 Railway
+- [ ] 营销（Reddit / X / Show HN）
+- [ ] 5 个真实测试用户 + 反馈
+- [ ] ProductHunt + Medium 发布
 - [ ] 100 用户 / $500 MRR
 
 ## 状态
 
-- 状态：MVP，**本地跑通**，未部署
+- 状态：MVP + 单页前端，**已部署 Railway**
 - 预算：**$0 启动**（开发用 DeepSeek key）
-- 下一里程碑：部署 + 5 个真实测试用户
+- 下一里程碑：Show HN + 5 个真实测试用户
 
 ## 我是谁
 
@@ -123,5 +124,6 @@ API 文档：http://127.0.0.1:8000/docs
 ---
 
 **License:** MIT
-**Code:** [github.com/.../agent-token-saas]
+**Code:** [github.com/sr11max/agent-token-saas](https://github.com/sr11max/agent-token-saas)
+**Live:** https://cheaptoken.up.railway.app（部署后填入）
 **Status:** Day 1, building in public
