@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-agent-token-saas 后端 v0.1
+agent-token-saas 鍚庣 v0.1
 - FastAPI
-- �?Kimi (开�? / OpenRouter (生产) �?AI
-- JWT 认证
-- Token 钱包（SQLite/Postgres�?"""
+- 鐢?Kimi (寮€鍙? / OpenRouter (鐢熶骇) 璋?AI
+- JWT 璁よ瘉
+- Token 閽卞寘锛圫QLite/Postgres锛?"""
 import os
 import sys
 import time
@@ -23,14 +23,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr
 
-# === 配置 ===
+# === 閰嶇疆 ===
 SECRET_KEY = os.environ.get('JWT_SECRET', 'dev-secret-change-in-prod-' + secrets.token_hex(8))
 JWT_ALGO = 'HS256'
 JWT_EXPIRE_DAYS = 30
 
-# AI provider 配置
-# 开发用 DeepSeek（你机器已经�?key，最稳）
-# 生产�?OpenRouter（海外服务器�?DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', '')
+# AI provider 閰嶇疆
+# 寮€鍙戠敤 DeepSeek锛堜綘鏈哄櫒宸茬粡鏈?key锛屾渶绋筹級
+# 鐢熶骇鐢?OpenRouter锛堟捣澶栨湇鍔″櫒锛?DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', '')
 DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions'
 DEEPSEEK_MODEL = os.environ.get('DEEPSEEK_MODEL', 'deepseek-v4-flash')
 
@@ -42,18 +42,18 @@ OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
 OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 OPENROUTER_MODEL = 'deepseek/deepseek-chat-v3'
 
-# 当前用哪�?provider
+# 褰撳墠鐢ㄥ摢涓?provider
 USE_PROVIDER = os.environ.get('AI_PROVIDER', 'deepseek')  # 'deepseek' or 'kimi' or 'openrouter'
 
-DB_PATH = Path(os.environ.get('DB_PATH', './data.db'))
+DB_PATH = Path(os.environ.get('DB_PATH', '/tmp/data.db'))
 
-# Token 价格（每 1K tokens�?TOKEN_PRICE = {
-    'deepseek': 0.00014,  # DeepSeek V3 价格
-    'kimi': 0.000012,  # Kimi 价格
+# Token 浠锋牸锛堟瘡 1K tokens锛?TOKEN_PRICE = {
+    'deepseek': 0.00014,  # DeepSeek V3 浠锋牸
+    'kimi': 0.000012,  # Kimi 浠锋牸
     'openrouter': 0.00027,  # $0.27/1M input
 }
 
-# === DB 初始�?===
+# === DB 鍒濆鍖?===
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -142,7 +142,7 @@ async def current_user(authorization: str = Header(None)) -> dict:
 
 # === AI Provider ===
 async def call_ai(message: str, model: Optional[str] = None) -> dict:
-    """�?AI，返�?{reply, prompt_tokens, completion_tokens, total_tokens}"""
+    """璋?AI锛岃繑鍥?{reply, prompt_tokens, completion_tokens, total_tokens}"""
     if USE_PROVIDER == 'deepseek':
         return await call_deepseek(message, model or DEEPSEEK_MODEL)
     elif USE_PROVIDER == 'kimi':
@@ -152,7 +152,7 @@ async def call_ai(message: str, model: Optional[str] = None) -> dict:
 
 
 async def call_deepseek(message: str, model: str) -> dict:
-    """�?DeepSeek API"""
+    """璋?DeepSeek API"""
     if not DEEPSEEK_API_KEY:
         raise HTTPException(500, 'DEEPSEEK_API_KEY not configured')
 
@@ -184,7 +184,7 @@ async def call_deepseek(message: str, model: str) -> dict:
 
 
 async def call_kimi(message: str, model: str) -> dict:
-    """�?Kimi API"""
+    """璋?Kimi API"""
     if not KIMI_API_KEY:
         raise HTTPException(500, 'KIMI_API_KEY not configured')
 
@@ -216,7 +216,7 @@ async def call_kimi(message: str, model: str) -> dict:
 
 
 async def call_openrouter(message: str, model: str) -> dict:
-    """�?OpenRouter API"""
+    """璋?OpenRouter API"""
     if not OPENROUTER_API_KEY:
         raise HTTPException(500, 'OPENROUTER_API_KEY not configured')
 
@@ -252,7 +252,7 @@ app = FastAPI(title='Agent Token SaaS', version='0.1.0')
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],  # 开发环境，生产要限�?    allow_credentials=True,
+    allow_origins=['*'],  # 寮€鍙戠幆澧冿紝鐢熶骇瑕侀檺鍒?    allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
 )
@@ -274,12 +274,12 @@ def register(req: RegisterReq):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
 
-    # 检查邮�?    existing = c.execute('SELECT id FROM users WHERE email = ?', (req.email,)).fetchone()
+    # 妫€鏌ラ偖绠?    existing = c.execute('SELECT id FROM users WHERE email = ?', (req.email,)).fetchone()
     if existing:
         conn.close()
         raise HTTPException(400, 'email already registered')
 
-    # 创建
+    # 鍒涘缓
     c.execute(
         'INSERT INTO users (email, password_hash, token_balance, created_at) VALUES (?, ?, ?, ?)',
         (req.email, hash_password(req.password), 50000, datetime.utcnow().isoformat())
@@ -333,7 +333,7 @@ async def chat(req: ChatReq, user: dict = Depends(current_user)):
     if user['token_balance'] <= 0:
         raise HTTPException(402, 'insufficient tokens, please top up')
 
-    # �?AI
+    # 璋?AI
     try:
         result = await call_ai(req.message, req.model)
     except Exception as e:
@@ -341,13 +341,13 @@ async def chat(req: ChatReq, user: dict = Depends(current_user)):
 
     tokens_used = result['total_tokens']
 
-    # 检查余�?    if user['token_balance'] < tokens_used:
-        # 扣到 0
+    # 妫€鏌ヤ綑棰?    if user['token_balance'] < tokens_used:
+        # 鎵ｅ埌 0
         tokens_used = user['token_balance']
 
     new_balance = user['token_balance'] - tokens_used
 
-    # 更新 DB
+    # 鏇存柊 DB
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute('UPDATE users SET token_balance = ? WHERE id = ?', (new_balance, user['id']))
